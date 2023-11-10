@@ -21,6 +21,11 @@ namespace WebApplication5.UserControls
             //Talent talent = dbService.GetTalentById(id);
         }
 
+        public Talent ShowTalentCard(int id)
+        {
+            Talent talent = dbService.GetTalentById(id);
+            return talent;
+        }
 
     }
 }

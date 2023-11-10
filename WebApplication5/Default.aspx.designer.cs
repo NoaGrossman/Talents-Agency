@@ -40,14 +40,5 @@ namespace WebApplication5
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::WebApplication5.UserControls.TalentCard talentCard;
-
-        /// <summary>
-        /// talentManagement control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::WebApplication5.UserControls.TalentManagement talentManagement;
     }
 }

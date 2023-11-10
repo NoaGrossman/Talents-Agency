@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Runtime.InteropServices;
+using System.Web.Services;
 using WebApplication5.Models;
 
 namespace WebApplication5
@@ -14,7 +16,7 @@ namespace WebApplication5
         {
             connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DB"].ConnectionString;
         }
-
+        [WebMethod]
         public List<Talent> GetAllTalents()
         {
             List<Talent> talents = new List<Talent>();
@@ -62,6 +64,7 @@ namespace WebApplication5
 
             return talents;
         }
+        [WebMethod]
         public void AddNewTalent(Talent talent)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -95,6 +98,7 @@ namespace WebApplication5
                 }
             }
         }
+        [WebMethod]
         public void UpdateTalent(int talentId, Talent talent)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -131,6 +135,7 @@ namespace WebApplication5
                 }
             }
         }
+        [WebMethod]
         public void DeleteTalent(int talentId)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -159,7 +164,7 @@ namespace WebApplication5
                 }
             }
         }
-
+        [WebMethod]
         public Talent GetTalentById(int talentId)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
