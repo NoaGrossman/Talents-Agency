@@ -1,0 +1,28 @@
+﻿body {
+    font-family: math;
+}
+
+table {
+    border-collapse: collapse;
+    border: 2px solid black;
+}
+
+.selected_talent {
+    background-color: dimgray;
+    color: white;
+}
+
+th {
+    border: 2px solid black;
+    background-color: darkseagreen;
+    font-size: 20px;
+    padding: 7px;
+    text-align: center;
+}
+
+td {
+    border: 2px solid black;
+    font-size: 15px;
+    padding: 4px;
+    text-align: center;
+}

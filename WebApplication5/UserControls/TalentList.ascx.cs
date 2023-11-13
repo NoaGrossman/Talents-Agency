@@ -14,32 +14,51 @@ namespace WebApplication5.UserControls
     {
         // Create an instance of the DBService class
         static DBService dbService = new DBService();
-        public HtmlTable talentTable;
+        protected HtmlTable talentTable;
 
-        protected void Page_Load(object sender, EventArgs e)
+        protected void Page_Load()
         {
-            // Find the HTML table using its ID
-            HtmlTable talentTable = (HtmlTable)FindControl("talentTable");
-
-            // Make sure it's not null before adding rows
-            if (talentTable != null)
+            if (!IsPostBack)
             {
-                // Bind the talent data to the HTML table
-                BindTalentTable(talentTable);
+                GetKTalents(2, 0);
             }
         }
-
-        private void BindTalentTable(HtmlTable talentTable)
+        public List<Talent> GetKTalents(int k, int curPage)
         {
-            List<Talent> talents = dbService.GetAllTalents();
+            return dbService.GetKTalents(k, curPage);
+        }
+        public int GetTalentsCount()
+        {
+            return dbService.GetTalentsCount();
+        }
 
+        private void BindTalentTable(List<Talent> talents)
+        {
+            // Clear existing rows and header from the table
+            talentTable.Rows.Clear();
+
+            // Create a new row for the header
+            HtmlTableRow headerRow = new HtmlTableRow();
+
+            // Add header cells to the header row
+            headerRow.Cells.Add(new HtmlTableCell { InnerText = "Talent ID" });
+            headerRow.Cells.Add(new HtmlTableCell { InnerText = "Name" });
+            headerRow.Cells.Add(new HtmlTableCell { InnerText = "Date of Birth" });
+            headerRow.Cells.Add(new HtmlTableCell { InnerText = "Email" });
+            headerRow.Cells.Add(new HtmlTableCell { InnerText = "Specialization" });
+            headerRow.Cells.Add(new HtmlTableCell { InnerText = "Age" });
+
+            // Add the header row to the thead section of the HTML table
+            talentTable.Rows.Add(headerRow);
+
+            // Iterate through talents and create rows for each talent
             foreach (Talent talent in talents)
             {
                 // Create a new row for the HTML table
                 HtmlTableRow row = new HtmlTableRow();
 
-                // Set the id attribute to the talent ID
-                row.ID = "row_" + talent.ID.ToString();
+                // Set the data-id attribute to the talent ID
+                row.Attributes.Add("data-id", talent.ID.ToString());
 
                 // Add onclick attribute to the row
                 row.Attributes.Add("onclick", $"rowClicked({talent.ID})");
@@ -56,6 +75,7 @@ namespace WebApplication5.UserControls
                 talentTable.Rows.Add(row);
             }
         }
+
         public void DeleteTalent(int id)
         {
             dbService.DeleteTalent(id);
@@ -66,35 +86,11 @@ namespace WebApplication5.UserControls
             dbService.UpdateTalent(id, talent);
         }
 
-        protected void SearchButton_Click(object sender, EventArgs e)
+
+        public List<Talent> SearchClicked(string inputText)
         {
-            //Console.WriteLine("Search");
-            //System.Diagnostics.Debug.WriteLine("Search");
-
-            string searchKeyword = searchTextBox.Text.Trim();
-
-            // Fetch your talents from the database, or use the existing data.
-            List<Talent> talents = dbService.GetAllTalents();
-
-            // Create a new list to store the search results
-            List<Talent> searchResults = new List<Talent>();
-
-            // Perform the search based on the keyword
-            foreach (Talent talent in talents)
-            {
-                if (talent.Name.IndexOf(searchKeyword, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    talent.Email.IndexOf(searchKeyword, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    talent.Specialization.IndexOf(searchKeyword, StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    searchResults.Add(talent);
-                }
-            }
-
-            // Clear the existing rows from the HTML table
-            talentTable.Rows.Clear();
-
-            // Bind the search results to the HTML table
-            BindTalentTable(talentTable);
+            return dbService.Search(inputText);
         }
+
     }
 }

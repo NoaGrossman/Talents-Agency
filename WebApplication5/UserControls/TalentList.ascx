@@ -1,15 +1,14 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="TalentList.ascx.cs" Inherits="WebApplication5.UserControls.TalentsList" %>
 <header>
-    <script src="../Scripts/Requests.js"></script>
 </header>
 <body>
     <div>
-        <asp:TextBox ID="searchTextBox" runat="server" placeholder="Search by Name, Email, or Specialization"></asp:TextBox>
-        <asp:Button ID="searchButton" runat="server" Text="Search" OnClick="SearchButton_Click" />
+        <input id="searchTextBox" placeholder="Search by Name, Email, or Specialization" />
+        <button id="searchButton" onclick="searchClicked(event)">Search</button>
     </div>
     <br />
 
-    <table id="talentTable" class="table table-striped" runat="server">
+    <table runat="server" id="talentTable" data-id="talentsTable" class="table table-striped">
         <thead>
             <tr>
                 <th>Talent ID</th>
@@ -24,12 +23,19 @@
             <!-- Talent rows will be added dynamically here -->
         </tbody>
     </table>
+    <div>
+        <button id="prevPage" onclick="prevPageClicked(event)" disabled="disabled"><<</button>
+        <span id="curPage"></span>
+        <button id="nextPage" onclick="nextPageClicked(event)">>></button>
+    </div>
     <br />
 
-    <div>
-        <button id="showBtn" style="display: none" onclick="showClicked()">Show Card</button>
-        <button id="editBtn" style="display: none" onclick="editClicked()">Edit</button>
-        <button id="deleteBtn" style="display: none" onclick="removeClicked()">Remove</button>
+    <button id="addBtn" onclick="addClicked(event)">Add Talent</button>
+
+    <div id="managementButtons" style="display: none">
+<%--        <button id="showBtn" onclick="showClicked(event)">Show Card</button>--%>
+        <button id="editBtn" onclick="editClicked(event)">Edit</button>
+        <button id="deleteBtn" onclick="removeClicked(event)">Remove</button>
     </div>
 </body>
 

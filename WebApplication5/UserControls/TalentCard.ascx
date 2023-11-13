@@ -1,6 +1,6 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="TalentCard.ascx.cs" Inherits="WebApplication5.UserControls.TalentCard" %>
 
-<div class="talent-card">
+<div id="talentCard" class="talent-card">
     <h2>Talent Card</h2>
     <hr />
     <div class="field">

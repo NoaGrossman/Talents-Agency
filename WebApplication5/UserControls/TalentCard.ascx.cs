@@ -16,16 +16,36 @@ namespace WebApplication5.UserControls
         {
 
         }
-        protected void TalentCardBtn_Click(object sender, EventArgs e)
-        {
-            //Talent talent = dbService.GetTalentById(id);
-        }
 
         public Talent ShowTalentCard(int id)
         {
             Talent talent = dbService.GetTalentById(id);
             return talent;
         }
+        public void UpdateTalentCard(int id, Talent talent)
+        {
+            dbService.UpdateTalent(id, talent);
+        }
+        public Talent EditTalentCard(int id)
+        {
+            Talent t = dbService.GetTalentById(id);
+            return t;
+        }
+        public int GetNextId()
+        {
+            int nextId = dbService.GetNextId();
+            return nextId;
+        }
+        //public void AddTalent(string name, string spec, string email, DateTime dob)
+        //{
+        //    Talent talent = new Talent();
+        //    talent.Name = name;
+        //    talent.DOB = dob;
+        //    talent.Email= email;
+        //    talent.Specialization= spec;
+        //    talent.Age= 0; //calc age by dob given
+        //    dbService.AddNewTalent(talent);
+        //}
 
     }
 }

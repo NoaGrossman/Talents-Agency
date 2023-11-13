@@ -1,22 +1,26 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="WebApplication5.Default" %>
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="MasterPage.master.cs" Inherits="WebApplication5.MasterPage" %>
 
 <%@ Register Src="~/UserControls/TalentCard.ascx" TagName="TalentCard" TagPrefix="uc" %>
 <%@ Register Src="~/UserControls/TalentList.ascx" TagName="TalentList" TagPrefix="uc" %>
 <%@ Register Src="~/UserControls/TalentManagement.ascx" TagName="TalentManagement" TagPrefix="uc" %>
 
-
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head runat="server">
     <title>Talents Agancy</title>
+    <%--<asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>--%>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="Scripts/Requests.js"></script>
     <link href="Styles/AgancyStyle.css" rel="stylesheet" />
 </head>
 <body>
-    <h1>Talents Agancy</h1>
     <form id="form1" runat="server">
+        <%--<div>
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+            </asp:ContentPlaceHolder>
+        </div>--%>
         <div>
             <uc:TalentList runat="server" ID="talentList" />
         </div>
@@ -27,7 +31,5 @@
             <uc:TalentManagement runat="server" ID="talentManagement" />
         </div>
     </form>
-
-
 </body>
 </html>
