@@ -22,10 +22,6 @@ namespace WebApplication5.UserControls
             Talent talent = dbService.GetTalentById(id);
             return talent;
         }
-        public void UpdateTalentCard(int id, Talent talent)
-        {
-            dbService.UpdateTalent(id, talent);
-        }
         public Talent EditTalentCard(int id)
         {
             Talent t = dbService.GetTalentById(id);

@@ -93,6 +93,7 @@
       <DependentUpon>MasterPage.Master</DependentUpon>
     </Compile>
     <Compile Include="Models\Talent.cs" />
+    <Compile Include="Models\Validation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserControls\TalentCard.ascx.cs">
       <DependentUpon>TalentCard.ascx</DependentUpon>

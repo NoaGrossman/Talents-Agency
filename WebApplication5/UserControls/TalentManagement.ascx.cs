@@ -21,5 +21,10 @@ namespace WebApplication5.UserControls
         {
             dbService.AddNewTalent(talent);
         }
+
+        public void UpdateTalent(int id, Talent talent)
+        {
+            dbService.UpdateTalent(id, talent);
+        }
     }
 }

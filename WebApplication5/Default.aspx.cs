@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
+using System.Web.Script.Services;
 using System.Web.Services;
 using System.Web.Services.Protocols;
 using System.Web.UI;
@@ -22,6 +23,7 @@ namespace WebApplication5
         {
         }
         [WebMethod]
+        [ScriptMethod(UseHttpGet = true)]
         public static List<Talent> SearchClicked(string inputText)
         {
             // Ensure talentsList is instantiated
@@ -32,6 +34,7 @@ namespace WebApplication5
             return talentsList.SearchClicked(inputText);
         }
         [WebMethod]
+        [ScriptMethod(UseHttpGet = true)]
         public static List<Talent> ShowTalents(int k, int curPage)
         {
             System.Diagnostics.Debug.WriteLine("showTalents() backend");
@@ -57,23 +60,86 @@ namespace WebApplication5
             talentsList.DeleteTalent(id);
         }
         [WebMethod]
-        public static void UpdateButton_Click(int id, string name, string spec, string email, DateTime dob)
+        public static Validation UpdateOrAdd(int id, string name, string spec, string email, DateTime dob, bool isAdd)
         {
-            if (tCard == null)
+            // Initialize the Validation response object
+            var response = new Validation
             {
-                tCard = new TalentCard();
-            }
-            Talent talent = new Talent();
-            talent.Name = name;
-            talent.DOB = dob;
-            talent.Email = email;
-            talent.Specialization = spec;
-            talent.Age = DateTime.Today.Year - dob.Year; //calc age by dob given
+                IsSuccess = false,
+                Message = "Validation failed"
+            };
 
-            tCard.UpdateTalentCard(id, talent);
+            // Perform validation
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                response.Message = "Name is required.";
+                return response;
+            }
+
+            if (string.IsNullOrWhiteSpace(spec))
+            {
+                response.Message = "Specialization is required.";
+                return response;
+            }
+
+            if (string.IsNullOrWhiteSpace(email) || !IsValidEmail(email))
+            {
+                response.Message = "Valid email is required.";
+                return response;
+            }
+
+            if (dob == default(DateTime))
+            {
+                response.Message = "Valid date of birth is required.";
+                return response;
+            }
+
+            // If validation passes, perform the update operation
+            if (tManagement == null)
+            {
+                tManagement = new TalentManagement();
+            }
+
+            Talent talent = new Talent
+            {
+                //ID = id,
+                Name = name,
+                DOB = dob,
+                Email = email,
+                Specialization = spec,
+                Age = DateTime.Today.Year - dob.Year // Calculate age by dob given
+            };
+            if (isAdd)
+            {
+                tManagement.AddNewTalent(talent);
+            }
+            else {
+                tManagement.UpdateTalent(id, talent);
+            }
+
+            // Update the Validation object for a successful operation
+            response.IsSuccess = true;
+            response.Message = "Talent updated successfully.";
+            return response;
         }
 
+        // Utility method to validate email
+        private static bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
         [WebMethod]
+        [ScriptMethod(UseHttpGet = true)]
         public static Talent ShowButton_Click(int id)
         {
             if (tCard == null)
@@ -94,6 +160,7 @@ namespace WebApplication5
             return t;
         }
         [WebMethod]
+        [ScriptMethod(UseHttpGet = true)]
         public static int GetNextId()
         {
             if (tCard == null)
@@ -104,6 +171,7 @@ namespace WebApplication5
             return nextId;
         }
         [WebMethod]
+        [ScriptMethod(UseHttpGet = true)]
         public static int GetTalentsCount()
         {
             // Ensure talentsList is instantiated
@@ -114,21 +182,21 @@ namespace WebApplication5
 
             return talentsList.GetTalentsCount();
         }
-        [WebMethod]
-        public static void AddNewTalent(string name, string spec, string email, DateTime dob)
-        {
-            if (tManagement == null)
-            {
-                tManagement = new TalentManagement();
-            }
-            Talent talent = new Talent();
-            talent.Name = name;
-            talent.DOB = dob;
-            talent.Email = email;
-            talent.Specialization = spec;
-            talent.Age = DateTime.Today.Year - dob.Year; //calc age by dob given
+        //[WebMethod]
+        //public static void AddNewTalent(string name, string spec, string email, DateTime dob)
+        //{
+        //    if (tManagement == null)
+        //    {
+        //        tManagement = new TalentManagement();
+        //    }
+        //    Talent talent = new Talent();
+        //    talent.Name = name;
+        //    talent.DOB = dob;
+        //    talent.Email = email;
+        //    talent.Specialization = spec;
+        //    talent.Age = DateTime.Today.Year - dob.Year; //calc age by dob given
 
-            tManagement.AddNewTalent(talent);
-        }
+        //    tManagement.AddNewTalent(talent);
+        //}
     }
 }

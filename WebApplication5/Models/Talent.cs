@@ -5,6 +5,7 @@ using System.Web;
 
 namespace WebApplication5.Models
 {
+
     public class Talent
     {
         public int ID { get; set; }
