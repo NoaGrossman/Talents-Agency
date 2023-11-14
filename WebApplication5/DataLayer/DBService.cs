@@ -27,7 +27,7 @@ namespace WebApplication5
                     connection.Open();
 
                     // Define the SQL query to retrieve data from the database
-                    string query = "SELECT COUNT(*) AS NumberOfTalents FROM agancy.talents";
+                    string query = "SELECT COUNT(*) AS NumberOfTalents FROM talents";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
@@ -57,8 +57,10 @@ namespace WebApplication5
                 {
                     connection.Open();
                     // Define the SQL query to retrieve data from the database
-                    string query = "SELECT * FROM agancy.talents ORDER BY talent_name, talent_specialization " +
-                        "OFFSET @Offset ROWS FETCH NEXT @Fetch ROWS ONLY";
+                    string query = "SELECT t.talent_id, t.talent_name, t.talent_email, t.talent_dob, t.talent_age, s.value AS talent_specialization FROM talents t INNER JOIN specializations s ON t.talent_specialization = s.id " +
+                        "ORDER BY t.talent_name, t.talent_specialization " +
+                        "OFFSET @Offset ROWS " +
+                        "FETCH NEXT @Fetch ROWS ONLY;";
 
                     using (SqlCommand cmd = new SqlCommand(query, connection))
                     {
@@ -76,9 +78,9 @@ namespace WebApplication5
                                     {
                                         ID = reader.GetInt32(reader.GetOrdinal("talent_id")),
                                         Name = reader.GetString(reader.GetOrdinal("talent_name")),
-                                        DOB = reader.GetDateTime(reader.GetOrdinal("talent_dateOfBirth")),
+                                        DOB = reader.GetDateTime(reader.GetOrdinal("talent_dob")),
                                         Email = reader.GetString(reader.GetOrdinal("talent_email")),
-                                        Specialization = reader.GetString(reader.GetOrdinal("talent_Specialization")),
+                                        Specialization = (Specialization)Enum.Parse(typeof(Specialization), reader.GetString(reader.GetOrdinal("talent_specialization"))),
                                         Age = reader.GetInt32(reader.GetOrdinal("talent_Age"))
                                     };
 
@@ -110,7 +112,7 @@ namespace WebApplication5
                     connection.Open();
 
                     // Define the SQL query to retrieve data from the database
-                    string query = "SELECT * FROM agancy.talents WHERE talent_name LIKE @inputText OR talent_email LIKE @inputText OR talent_specialization LIKE @inputText";
+                    string query = "SELECT * FROM talents WHERE talent_name LIKE @inputText OR talent_email LIKE @inputText";
 
                     using (SqlCommand cmd = new SqlCommand(query, connection))
                     {
@@ -128,9 +130,9 @@ namespace WebApplication5
                                     {
                                         ID = reader.GetInt32(reader.GetOrdinal("talent_id")),
                                         Name = reader.GetString(reader.GetOrdinal("talent_name")),
-                                        DOB = reader.GetDateTime(reader.GetOrdinal("talent_dateOfBirth")),
+                                        DOB = reader.GetDateTime(reader.GetOrdinal("talent_dob")),
                                         Email = reader.GetString(reader.GetOrdinal("talent_email")),
-                                        Specialization = reader.GetString(reader.GetOrdinal("talent_Specialization")),
+                                        Specialization = (Specialization)Enum.Parse(typeof(Specialization), reader.GetString(reader.GetOrdinal("talent_specialization"))),
                                         Age = reader.GetInt32(reader.GetOrdinal("talent_Age"))
                                     };
 
@@ -146,12 +148,6 @@ namespace WebApplication5
                     Console.WriteLine("SQL Error: " + ex.Message);
                     throw;
                 }
-                catch (Exception ex)
-                {
-                    // Log or handle other exceptions
-                    Console.WriteLine("Error: " + ex.Message);
-                    throw;
-                }
             }
 
             return talents;
@@ -163,7 +159,7 @@ namespace WebApplication5
         public int GetNextId()
         {
             // SQL query to get the next identity value
-            string query = "SELECT IDENT_CURRENT('agancy.talents') + IDENT_INCR('agancy.talents') AS NextID;";
+            string query = "SELECT IDENT_CURRENT('talents') + IDENT_INCR('talents') AS NextID;";
 
             // Using a SqlConnection within a using block ensures it's disposed properly
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -198,7 +194,7 @@ namespace WebApplication5
                     connection.Open();
 
                     // Define the SQL INSERT statement
-                    string query = "INSERT INTO agancy.talents (talent_name, talent_dateOfBirth, talent_email, talent_Specialization, talent_Age) " +
+                    string query = "INSERT INTO talents (talent_name, talent_dob, talent_email, talent_Specialization, talent_Age) " +
                                    "VALUES (@Name, @DOB, @Email, @Specialization, @Age)";
 
                     using (SqlCommand cmd = new SqlCommand(query, connection))
@@ -207,7 +203,7 @@ namespace WebApplication5
                         cmd.Parameters.AddWithValue("@Name", talent.Name);
                         cmd.Parameters.AddWithValue("@DOB", talent.DOB);
                         cmd.Parameters.AddWithValue("@Email", talent.Email);
-                        cmd.Parameters.AddWithValue("@Specialization", talent.Specialization);
+                        cmd.Parameters.AddWithValue("@Specialization", (int)talent.Specialization); // Assuming Specialization is an enum
                         cmd.Parameters.AddWithValue("@Age", talent.Age);
 
                         // Execute the INSERT statement
@@ -232,8 +228,8 @@ namespace WebApplication5
                     connection.Open();
 
                     // Define the SQL UPDATE statement
-                    string query = "UPDATE agancy.talents " +
-                                   "SET talent_name = @Name, talent_dateOfBirth = @DOB, talent_email = @Email, " +
+                    string query = "UPDATE talents " +
+                                   "SET talent_name = @Name, talent_dob = @DOB, talent_email = @Email, " +
                                    "talent_Specialization = @Specialization, talent_Age = @Age " +
                                    "WHERE talent_id = @TalentId";
 
@@ -243,7 +239,7 @@ namespace WebApplication5
                         cmd.Parameters.AddWithValue("@Name", talent.Name);
                         cmd.Parameters.AddWithValue("@DOB", talent.DOB);
                         cmd.Parameters.AddWithValue("@Email", talent.Email);
-                        cmd.Parameters.AddWithValue("@Specialization", talent.Specialization);
+                        cmd.Parameters.AddWithValue("@Specialization", (int)talent.Specialization); // Assuming Specialization is an enum
                         cmd.Parameters.AddWithValue("@Age", talent.Age);
                         cmd.Parameters.AddWithValue("@TalentId", talentId);
 
@@ -269,7 +265,7 @@ namespace WebApplication5
                     connection.Open();
 
                     // Define the SQL DELETE statement
-                    string query = "DELETE FROM agancy.talents WHERE talent_id = @TalentId";
+                    string query = "DELETE FROM talents WHERE talent_id = @TalentId";
 
                     using (SqlCommand cmd = new SqlCommand(query, connection))
                     {
@@ -298,7 +294,7 @@ namespace WebApplication5
                     connection.Open();
 
                     // Define the SQL SELECT statement to retrieve a Talent by ID
-                    string query = "SELECT * FROM agancy.talents WHERE talent_id = @TalentId";
+                    string query = "SELECT * FROM talents WHERE talent_id = @TalentId";
 
                     using (SqlCommand cmd = new SqlCommand(query, connection))
                     {
@@ -314,9 +310,9 @@ namespace WebApplication5
                                 {
                                     ID = reader.GetInt32(reader.GetOrdinal("talent_id")),
                                     Name = reader.GetString(reader.GetOrdinal("talent_name")),
-                                    DOB = reader.GetDateTime(reader.GetOrdinal("talent_dateOfBirth")),
+                                    DOB = reader.GetDateTime(reader.GetOrdinal("talent_dob")),
                                     Email = reader.GetString(reader.GetOrdinal("talent_email")),
-                                    Specialization = reader.GetString(reader.GetOrdinal("talent_Specialization")),
+                                    Specialization = (Specialization)Enum.Parse(typeof(Specialization), reader.GetString(reader.GetOrdinal("talent_specialization"))),
                                     Age = reader.GetInt32(reader.GetOrdinal("talent_Age"))
                                 };
 

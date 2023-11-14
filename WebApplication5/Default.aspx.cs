@@ -59,6 +59,7 @@ namespace WebApplication5
             // Call DeleteTalent on the talentsList instance
             talentsList.DeleteTalent(id);
         }
+
         [WebMethod]
         public static Validation UpdateOrAdd(int id, string name, string spec, string email, DateTime dob, bool isAdd)
         {
@@ -76,7 +77,7 @@ namespace WebApplication5
                 return response;
             }
 
-            if (string.IsNullOrWhiteSpace(spec))
+            if (string.IsNullOrWhiteSpace(spec) || !Enum.TryParse(spec, out Specialization specialization))
             {
                 response.Message = "Specialization is required.";
                 return response;
@@ -106,7 +107,7 @@ namespace WebApplication5
                 Name = name,
                 DOB = dob,
                 Email = email,
-                Specialization = spec,
+                Specialization = specialization,
                 Age = DateTime.Today.Year - dob.Year // Calculate age by dob given
             };
             if (isAdd)
@@ -182,21 +183,5 @@ namespace WebApplication5
 
             return talentsList.GetTalentsCount();
         }
-        //[WebMethod]
-        //public static void AddNewTalent(string name, string spec, string email, DateTime dob)
-        //{
-        //    if (tManagement == null)
-        //    {
-        //        tManagement = new TalentManagement();
-        //    }
-        //    Talent talent = new Talent();
-        //    talent.Name = name;
-        //    talent.DOB = dob;
-        //    talent.Email = email;
-        //    talent.Specialization = spec;
-        //    talent.Age = DateTime.Today.Year - dob.Year; //calc age by dob given
-
-        //    tManagement.AddNewTalent(talent);
-        //}
     }
 }

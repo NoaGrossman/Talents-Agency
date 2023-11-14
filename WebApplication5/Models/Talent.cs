@@ -5,6 +5,14 @@ using System.Web;
 
 namespace WebApplication5.Models
 {
+    public enum Specialization
+    {
+        Actor,
+        Musician,
+        Dancer,
+        Designer,
+        Developer
+    }
 
     public class Talent
     {
@@ -12,7 +20,7 @@ namespace WebApplication5.Models
         public string Name { get; set; }
         public DateTime DOB { get; set; }
         public string Email { get; set; }
-        public string Specialization { get; set; }
+        public Specialization Specialization { get; set; }
         public int Age { get; set; }
     }
 

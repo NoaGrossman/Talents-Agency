@@ -3,8 +3,18 @@ var rowsNumToShow = 2;
 var currentPage = 1;
 var curTalentsCount = 0;
 
+const SpecializationEnum = {
+    Actor: 0,
+    Musician: 1,
+    Dancer: 2,
+    Designer: 3,
+    Developer: 4
+};
+
+
 $(document).ready(function () {
     console.log("Noa:", "onReady()");
+    populateSpecializationDropdown();
     getTalentsCount();
     showTalents();
 });
@@ -120,12 +130,11 @@ function searchClicked(e) {
         currentPage = 1;
         searchBtn.textContent = 'Clear';
         $.ajax({
-            async: false,
-            url: "Default.aspx/SearchClicked",
-            type: "GET", // Use "POST" to send data
+            async: true,
+            url: "Default.aspx/SearchClicked?inputText=" + searchText.value,
+            type: "GET",
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
-            data: JSON.stringify({ inputText: searchText.value }),
             success: function (data) {
                 updateTalentTable(data.d);
                 curTalentsCount = data.d.length;
@@ -156,10 +165,30 @@ function updateTalentTable(talents) {
         row.insertCell(1).innerHTML = talent.Name;
         row.insertCell(2).innerHTML = formatCSharpDateToJS(talent.DOB); // Format date as needed
         row.insertCell(3).innerHTML = talent.Email;
-        row.insertCell(4).innerHTML = talent.Specialization;
+        row.insertCell(4).innerHTML = getSpecializationDisplayName(talent.Specialization); // Convert enum to display name
         row.insertCell(5).innerHTML = talent.Age;
     });
 }
+
+// Converts Specialization enum to a user-friendly display name
+function getSpecializationDisplayName(specialization) {
+    switch (specialization) {
+        case 0:
+            return "Actor";
+        case 1:
+            return "Musician";
+        case 2:
+            return "Dancer";
+        case 3:
+            return "Director";
+        case 4:
+            return "Developer";
+        // Add more cases as per your enum values
+        default:
+            return "Unknown";
+    }
+}
+
 
 
 function addClicked(e) {
@@ -196,11 +225,12 @@ function getcurrentTalent() {
     let talentId = document.getElementById('talentManagementId').textContent;
     let talentName = document.getElementById('talentManagementName').value;
     let talentEmail = document.getElementById('talentManagementEmail').value;
-    let talentSpec = document.getElementById('talentManagementSpecialization').value;
+    let talentSpec = SpecializationEnum[document.getElementById('talentManagementSpecialization').value];
     let talentDob = document.getElementById('talentManagementDOB').value;
     let talent = { id: talentId, name: talentName, email: talentEmail, specialization: talentSpec, dob: talentDob }
     return talent;
 }
+
 
 function onAddBtnClicked(e) {
     let currentTalent = getcurrentTalent();
@@ -342,23 +372,36 @@ function bindTalentData(talentData, option) {
         console.error("No talent data provided");
         return;
     }
+    let specializationString = Object.keys(SpecializationEnum).find(key => SpecializationEnum[key] === talentData.Specialization);
     // Update the HTML elements with the talent data
     switch (option) {
         case 'show':
             document.getElementById('talentId').textContent = talentData.ID;
             document.getElementById('talentName').textContent = talentData.Name;
-            document.getElementById('talentSpecialization').textContent = talentData.Specialization;
+            document.getElementById('talentManagementSpecialization').textContent = specializationString;
             document.getElementById('talentEmail').textContent = talentData.Email;
             document.getElementById('talentDOB').textContent = formatCSharpDateToJS(talentData.DOB);
 
         case 'add' || 'edit':
             document.getElementById('talentManagementId').textContent = talentData.ID;
             document.getElementById('talentManagementName').value = talentData.Name;
-            document.getElementById('talentManagementSpecialization').value = talentData.Specialization;
+            document.getElementById('talentManagementSpecialization').value = specializationString;
             document.getElementById('talentManagementEmail').value = talentData.Email;
             document.getElementById('talentManagementDOB').value = formatCSharpDateToJS(talentData.DOB);
     }
 }
+
+function populateSpecializationDropdown() {
+    let dropdown = document.getElementById('talentManagementSpecialization');
+    for (let spec in SpecializationEnum) {
+        let option = document.createElement('option');
+        option.value = spec;
+        option.text = spec;
+        dropdown.appendChild(option);
+    }
+}
+
+
 
 function formatCSharpDateToJS(csharpDate) {
     // Extract the milliseconds part from the C# DateTime string
