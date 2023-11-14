@@ -397,6 +397,3 @@ function formatCSharpDateToJS(csharpDate) {
 
     return year + '-' + month + '-' + day;
 }
-
-
-
