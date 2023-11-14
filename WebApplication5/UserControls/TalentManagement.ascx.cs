@@ -14,8 +14,7 @@ namespace WebApplication5.UserControls
 
     public partial class TalentManagement : System.Web.UI.UserControl
     {
-        DBService dbService = new DBService();
-        
+        static DBService dbService = new DBService(); // Create an instance of the DBService class
 
         public void AddNewTalent(Talent talent)
         {

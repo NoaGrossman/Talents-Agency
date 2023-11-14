@@ -5,16 +5,41 @@ using System.Data.SqlClient;
 using System.Web.Services;
 using System.Web.UI.HtmlControls;
 using WebApplication5.Models;
+using WebApplication5.DataLayer;
 
 namespace WebApplication5
 {
     public class DBService
     {
         public string connectionString;
+        private Queries queries = new Queries(); // Instance of Queries class
+
         public DBService()
         {
             connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DB"].ConnectionString;
+            CreateTalentsTable();
         }
+        private void CreateTalentsTable()
+        {
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(queries.createTable, connection))
+                {
+                    try
+                    {
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                        Console.WriteLine("Table 'talents' created successfully.");
+                    }
+                    catch (SqlException e)
+                    {
+                        Console.WriteLine("Error occurred while creating the table: " + e.Message);
+                    }
+                }
+            }
+        }
+
         [WebMethod]
         public int GetTalentsCount()
         {
@@ -26,20 +51,14 @@ namespace WebApplication5
                 {
                     connection.Open();
 
-                    // Define the SQL query to retrieve data from the database
-                    string query = "SELECT COUNT(*) AS NumberOfTalents FROM agancy.talents";
-
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                    using (SqlCommand command = new SqlCommand(queries.getTalentsCount, connection))
                     {
-                        // Execute the query and get the result
                         talentsCount = (int)command.ExecuteScalar();
                     }
                 }
-                catch (Exception ex)
+                catch (SqlException e)
                 {
-                    // Handle connection or database-related errors.
-                    // You might want to log the error or handle it differently.
-                    throw;
+                    Console.WriteLine("Error occurred while fetching talents count from table: " + e.Message);
                 }
             }
 
@@ -56,11 +75,7 @@ namespace WebApplication5
                 try
                 {
                     connection.Open();
-                    // Define the SQL query to retrieve data from the database
-                    string query = "SELECT * FROM agancy.talents ORDER BY talent_name, talent_specialization " +
-                        "OFFSET @Offset ROWS FETCH NEXT @Fetch ROWS ONLY";
-
-                    using (SqlCommand cmd = new SqlCommand(query, connection))
+                    using (SqlCommand cmd = new SqlCommand(queries.getInRangeTalents, connection))
                     {
                         cmd.Parameters.AddWithValue("@Offset", k * (curPage - 1));
                         cmd.Parameters.AddWithValue("@Fetch", k);
@@ -76,7 +91,7 @@ namespace WebApplication5
                                     {
                                         ID = reader.GetInt32(reader.GetOrdinal("talent_id")),
                                         Name = reader.GetString(reader.GetOrdinal("talent_name")),
-                                        DOB = reader.GetDateTime(reader.GetOrdinal("talent_dateOfBirth")),
+                                        DOB = reader.GetDateTime(reader.GetOrdinal("talent_dob")),
                                         Email = reader.GetString(reader.GetOrdinal("talent_email")),
                                         Specialization = reader.GetString(reader.GetOrdinal("talent_Specialization")),
                                         Age = reader.GetInt32(reader.GetOrdinal("talent_Age"))
@@ -88,11 +103,9 @@ namespace WebApplication5
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (SqlException e)
                 {
-                    // Handle connection or database-related errors.
-                    // You might want to log the error or handle it differently.
-                    throw;
+                    Console.WriteLine("Error occurred while tring to get talents from table: " + e.Message);
                 }
             }
 
@@ -109,12 +122,8 @@ namespace WebApplication5
                 {
                     connection.Open();
 
-                    // Define the SQL query to retrieve data from the database
-                    string query = "SELECT * FROM agancy.talents WHERE talent_name LIKE @inputText OR talent_email LIKE @inputText OR talent_specialization LIKE @inputText";
-
-                    using (SqlCommand cmd = new SqlCommand(query, connection))
+                    using (SqlCommand cmd = new SqlCommand(queries.getTalentsBySearchInput, connection))
                     {
-                        // Use parameters to avoid SQL injection
                         cmd.Parameters.AddWithValue("@inputText", "%" + inputText + "%");
 
                         using (SqlDataReader reader = cmd.ExecuteReader())
@@ -128,7 +137,7 @@ namespace WebApplication5
                                     {
                                         ID = reader.GetInt32(reader.GetOrdinal("talent_id")),
                                         Name = reader.GetString(reader.GetOrdinal("talent_name")),
-                                        DOB = reader.GetDateTime(reader.GetOrdinal("talent_dateOfBirth")),
+                                        DOB = reader.GetDateTime(reader.GetOrdinal("talent_dob")),
                                         Email = reader.GetString(reader.GetOrdinal("talent_email")),
                                         Specialization = reader.GetString(reader.GetOrdinal("talent_Specialization")),
                                         Age = reader.GetInt32(reader.GetOrdinal("talent_Age"))
@@ -142,14 +151,7 @@ namespace WebApplication5
                 }
                 catch (SqlException ex)
                 {
-                    // Log or handle database-related errors
                     Console.WriteLine("SQL Error: " + ex.Message);
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    // Log or handle other exceptions
-                    Console.WriteLine("Error: " + ex.Message);
                     throw;
                 }
             }
@@ -157,22 +159,16 @@ namespace WebApplication5
             return talents;
         }
 
-
-
         [WebMethod]
         public int GetNextId()
         {
-            // SQL query to get the next identity value
-            string query = "SELECT IDENT_CURRENT('agancy.talents') + IDENT_INCR('agancy.talents') AS NextID;";
-
-            // Using a SqlConnection within a using block ensures it's disposed properly
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 // Open the connection
                 conn.Open();
 
                 // Create a SqlCommand to execute the query
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                using (SqlCommand cmd = new SqlCommand(queries.getNextId, conn))
                 {
                     // Execute the query and get the result
                     object result = cmd.ExecuteScalar();
@@ -197,11 +193,7 @@ namespace WebApplication5
                 {
                     connection.Open();
 
-                    // Define the SQL INSERT statement
-                    string query = "INSERT INTO agancy.talents (talent_name, talent_dateOfBirth, talent_email, talent_Specialization, talent_Age) " +
-                                   "VALUES (@Name, @DOB, @Email, @Specialization, @Age)";
-
-                    using (SqlCommand cmd = new SqlCommand(query, connection))
+                    using (SqlCommand cmd = new SqlCommand(queries.addTalent, connection))
                     {
                         // Add parameters to the SQL command to prevent SQL injection
                         cmd.Parameters.AddWithValue("@Name", talent.Name);
@@ -210,14 +202,12 @@ namespace WebApplication5
                         cmd.Parameters.AddWithValue("@Specialization", talent.Specialization);
                         cmd.Parameters.AddWithValue("@Age", talent.Age);
 
-                        // Execute the INSERT statement
                         cmd.ExecuteNonQuery();
                     }
                 }
-                catch (Exception ex)
+                catch (SqlException ex)
                 {
-                    // Handle connection or database-related errors.
-                    // You might want to log the error or handle it differently.
+                    Console.WriteLine("SQL Error: " + ex.Message);
                     throw;
                 }
             }
@@ -231,13 +221,7 @@ namespace WebApplication5
                 {
                     connection.Open();
 
-                    // Define the SQL UPDATE statement
-                    string query = "UPDATE agancy.talents " +
-                                   "SET talent_name = @Name, talent_dateOfBirth = @DOB, talent_email = @Email, " +
-                                   "talent_Specialization = @Specialization, talent_Age = @Age " +
-                                   "WHERE talent_id = @TalentId";
-
-                    using (SqlCommand cmd = new SqlCommand(query, connection))
+                    using (SqlCommand cmd = new SqlCommand(queries.updateTalentInfo, connection))
                     {
                         // Add parameters to the SQL command
                         cmd.Parameters.AddWithValue("@Name", talent.Name);
@@ -247,14 +231,12 @@ namespace WebApplication5
                         cmd.Parameters.AddWithValue("@Age", talent.Age);
                         cmd.Parameters.AddWithValue("@TalentId", talentId);
 
-                        // Execute the UPDATE statement
                         cmd.ExecuteNonQuery();
                     }
                 }
-                catch (Exception ex)
+                catch (SqlException ex)
                 {
-                    // Handle connection or database-related errors.
-                    // You might want to log the error or handle it differently.
+                    Console.WriteLine("SQL Error: " + ex.Message);
                     throw;
                 }
             }
@@ -268,22 +250,17 @@ namespace WebApplication5
                 {
                     connection.Open();
 
-                    // Define the SQL DELETE statement
-                    string query = "DELETE FROM agancy.talents WHERE talent_id = @TalentId";
-
-                    using (SqlCommand cmd = new SqlCommand(query, connection))
+                    using (SqlCommand cmd = new SqlCommand(queries.removeTalent, connection))
                     {
                         // Add a parameter to the SQL command
                         cmd.Parameters.AddWithValue("@TalentId", talentId);
 
-                        // Execute the DELETE statement
                         cmd.ExecuteNonQuery();
                     }
                 }
-                catch (Exception ex)
+                catch (SqlException ex)
                 {
-                    // Handle connection or database-related errors.
-                    // You might want to log the error or handle it differently.
+                    Console.WriteLine("SQL Error: " + ex.Message);
                     throw;
                 }
             }
@@ -297,10 +274,7 @@ namespace WebApplication5
                 {
                     connection.Open();
 
-                    // Define the SQL SELECT statement to retrieve a Talent by ID
-                    string query = "SELECT * FROM agancy.talents WHERE talent_id = @TalentId";
-
-                    using (SqlCommand cmd = new SqlCommand(query, connection))
+                    using (SqlCommand cmd = new SqlCommand(queries.getTalentById, connection))
                     {
                         // Add the parameter for the Talent ID
                         cmd.Parameters.AddWithValue("@TalentId", talentId);
@@ -314,7 +288,7 @@ namespace WebApplication5
                                 {
                                     ID = reader.GetInt32(reader.GetOrdinal("talent_id")),
                                     Name = reader.GetString(reader.GetOrdinal("talent_name")),
-                                    DOB = reader.GetDateTime(reader.GetOrdinal("talent_dateOfBirth")),
+                                    DOB = reader.GetDateTime(reader.GetOrdinal("talent_dob")),
                                     Email = reader.GetString(reader.GetOrdinal("talent_email")),
                                     Specialization = reader.GetString(reader.GetOrdinal("talent_Specialization")),
                                     Age = reader.GetInt32(reader.GetOrdinal("talent_Age"))
@@ -325,10 +299,9 @@ namespace WebApplication5
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (SqlException ex)
                 {
-                    // Handle connection or database-related errors.
-                    // You might want to log the error or handle it differently.
+                    Console.WriteLine("SQL Error: " + ex.Message);
                     throw;
                 }
             }

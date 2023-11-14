@@ -1,17 +1,16 @@
-﻿var currentTalentId = 0;
-var rowsNumToShow = 2;
-var currentPage = 1;
-var curTalentsCount = 0;
+﻿var currentTalentId = 0; // A variable that keeps the curent id that clicked last
+var rowsNumToShow = 2; // Can be changed due to talents amount we want to show at the same page
+var currentPage = 1; // A variable that keeps the current table page
+var curTalentsCount = 0; // A variable that will help on pagination check of last page
 
 $(document).ready(function () {
     console.log("Noa:", "onReady()");
-    getTalentsCount();
+    getTalentsCount(); 
     showTalents();
 });
 
 function rowClicked(event, id) {
 
-    // Replace 'your-class' with the class you want to remove
     let classNameToRemove = 'selected_talent';
 
     // Find all elements with the specified class
@@ -55,14 +54,15 @@ function getTalentsCount() {
     $.ajax({
         async: false,
         url: "Default.aspx/GetTalentsCount",
-        type: "GET", // Use "POST" to send data
+        type: "GET", 
         contentType: "application/json; charset=utf-8",
         dataType: 'json',
         success: function (data) {
             curTalentsCount = data.d;
         },
         error: function (error) {
-            console.error("Error showing talents:", error);
+            console.error("Error get talents count:", error);
+            alert("Error get talents count: " + error);
         }
     });
 }
@@ -72,16 +72,17 @@ function showTalents() {
 
     $.ajax({
         url: "Default.aspx/ShowTalents",
-        type: "GET", // Use GET to send data
+        type: "GET", 
         contentType: "application/json; charset=utf-8",
         dataType: 'json',
-        data: { k: rowsNumToShow, curPage: currentPage }, // Data is passed in the query string
+        data: { k: rowsNumToShow, curPage: currentPage }, 
         success: function (data) {
             updateTalentTable(data.d);
             applyPagination();
         },
         error: function (error) {
             console.error("Error showing talents:", error);
+            alert("Error showing talents: " + error);
         }
     });
 }
@@ -92,16 +93,17 @@ function removeClicked(e) {
         async: false,
         url: "Default.aspx/RemoveButton_Click",
         cache: false,
-        type: "POST", // Use "POST" to send data
+        type: "POST",
         contentType: "application/json; charset=utf-8",
         dataType: 'json',
         data: JSON.stringify({ 'id': currentTalentId }),
         success: function (data) {
             alert('Talent remove succesfuly');
-            window.location.reload(); // Reload the page or redirect as needed
+            window.location.reload(); 
         },
         error: function (error) {
-            console.error("Error removing talents:", error);
+            console.error("Error removing talent:", error);
+            alert("Error removing talent: " + error);
         }
     });
 }
@@ -122,17 +124,21 @@ function searchClicked(e) {
         $.ajax({
             async: false,
             url: "Default.aspx/SearchClicked",
-            type: "GET", // Use "POST" to send data
+            type: "POST", //A POST request instead of GET due to: 
+            //Data Size: POST requests do not have URL length limitations, which allows sending larger amounts of data.
+            //Security: POST data does not get stored in browser history.
+            //Structure: Allows a structured data format(JSON) to be sent in the request body, which is more suitable for complex data.
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
-            data: JSON.stringify({ inputText: searchText.value }),
+            data: JSON.stringify({ 'inputText': searchText.value }),
             success: function (data) {
                 updateTalentTable(data.d);
                 curTalentsCount = data.d.length;
                 applyPagination();
             },
             error: function (error) {
-                console.error("Error:", error);
+                console.error("Error showing talents by search:", error);
+                alert("Error showing talents by search: " + error);
             }
         });
     }
@@ -145,11 +151,10 @@ function updateTalentTable(talents) {
         table.deleteRow(i);
     }
 
-    // Assuming 'talents' is an array of talent objects
     talents.forEach(function (talent) {
         var row = table.insertRow();
 
-        row.setAttribute('data-id', talent.ID); // Use data-id attribute instead of id
+        row.setAttribute('data-id', talent.ID); 
         row.setAttribute('onclick', 'rowClicked(event, ' + talent.ID + ')'); // Add onclick attribute
 
         row.insertCell(0).innerHTML = talent.ID;
@@ -187,7 +192,8 @@ function addClicked(e) {
             }
         },
         error: function (error) {
-            console.error("Error:", error);
+            console.error("Error show add new talent view:", error);
+            alert("Error show add new talent view:" + error);
         }
     });
 }
@@ -226,14 +232,15 @@ function onAddBtnClicked(e) {
             if (response.d.IsSuccess) {
                 // If validation is successful
                 alert("Talent Add successfuly.");
-                window.location.reload(); // Reload the page or redirect as needed
+                window.location.reload(); // Reload the page
             } else {
                 // If validation fails
                 alert("Validation failed: " + response.d.Message);
             }
         },
         error: function (error) {
-            console.error("Error:", error);
+            console.error("Error adding new talent:", error);
+            alert("Error adding new talent:" + error);
         }
     });
 }
@@ -249,7 +256,7 @@ function editClicked(e) {
     document.getElementById('updateBtn').style.display = 'block';
 
     $.ajax({
-        async: false, // Set to true for asynchronous call
+        async: false, 
         url: "Default.aspx/EditButton_Click",
         type: "POST",
         contentType: "application/json; charset=utf-8",
@@ -265,7 +272,8 @@ function editClicked(e) {
             }
         },
         error: function (error) {
-            console.error("Error:", error);
+            console.error("Error show edit talent view:", error);
+            alert("Error show edit talent view:" + error);
         }
     });
 }
@@ -299,7 +307,9 @@ function updateClicked(e) {
             }
         },
         error: function (error) {
-            console.error("Error:", error);
+            console.error("Error update talent:", error);
+            alert("Error update talent:" + error);
+
         }
     });
 }
@@ -314,7 +324,6 @@ function showTalentCard(e) {
     var talentCardDiv = document.getElementById('talentManagementDiv');
     talentCardDiv.style.display = 'none';
 
-    // Make an asynchronous AJAX call
     $.ajax({
         async: false,
         url: "Default.aspx/ShowButton_Click?id=" + currentTalentId,
@@ -330,7 +339,8 @@ function showTalentCard(e) {
             }
         },
         error: function (error) {
-            console.error("Error in showTalentCard:", error);
+            console.error("Error showing talent card view:", error);
+            alert("Error showing talent card view:" + error);
         }
     });
 }
@@ -380,7 +390,7 @@ function formatCSharpDateToJS(csharpDate) {
             return '';
         }
     }
-    // Format the date as 'yyyy/mm/dd'
+    // Format the date as 'yyyy-mm-dd'
     var year = date.getFullYear();
     var month = ('0' + (date.getMonth() + 1)).slice(-2); // Months are 0-based in JS
     var day = ('0' + date.getDate()).slice(-2);

@@ -33,7 +33,6 @@
     <button id="addBtn" onclick="addClicked(event)">Add Talent</button>
 
     <div id="managementButtons" style="display: none">
-<%--        <button id="showBtn" onclick="showClicked(event)">Show Card</button>--%>
         <button id="editBtn" onclick="editClicked(event)">Edit</button>
         <button id="deleteBtn" onclick="removeClicked(event)">Remove</button>
     </div>

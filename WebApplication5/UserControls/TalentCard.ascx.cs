@@ -10,7 +10,7 @@ namespace WebApplication5.UserControls
 {
     public partial class TalentCard : UserControl
     {
-        DBService dbService = new DBService();
+        static DBService dbService = new DBService(); // Create an instance of the DBService class
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -32,16 +32,6 @@ namespace WebApplication5.UserControls
             int nextId = dbService.GetNextId();
             return nextId;
         }
-        //public void AddTalent(string name, string spec, string email, DateTime dob)
-        //{
-        //    Talent talent = new Talent();
-        //    talent.Name = name;
-        //    talent.DOB = dob;
-        //    talent.Email= email;
-        //    talent.Specialization= spec;
-        //    talent.Age= 0; //calc age by dob given
-        //    dbService.AddNewTalent(talent);
-        //}
 
     }
 }

@@ -23,7 +23,7 @@ namespace WebApplication5
         {
         }
         [WebMethod]
-        [ScriptMethod(UseHttpGet = true)]
+        //[ScriptMethod(UseHttpGet = true)]
         public static List<Talent> SearchClicked(string inputText)
         {
             // Ensure talentsList is instantiated
@@ -182,21 +182,5 @@ namespace WebApplication5
 
             return talentsList.GetTalentsCount();
         }
-        //[WebMethod]
-        //public static void AddNewTalent(string name, string spec, string email, DateTime dob)
-        //{
-        //    if (tManagement == null)
-        //    {
-        //        tManagement = new TalentManagement();
-        //    }
-        //    Talent talent = new Talent();
-        //    talent.Name = name;
-        //    talent.DOB = dob;
-        //    talent.Email = email;
-        //    talent.Specialization = spec;
-        //    talent.Age = DateTime.Today.Year - dob.Year; //calc age by dob given
-
-        //    tManagement.AddNewTalent(talent);
-        //}
     }
 }
