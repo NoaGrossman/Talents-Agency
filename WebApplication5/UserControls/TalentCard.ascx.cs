@@ -10,17 +10,28 @@ namespace WebApplication5.UserControls
 {
     public partial class TalentCard : UserControl
     {
-        DBService dbService = new DBService();
+        static DBService dbService = new DBService(); // Create an instance of the DBService class
 
         protected void Page_Load(object sender, EventArgs e)
         {
 
         }
-        protected void TalentCardBtn_Click(object sender, EventArgs e)
-        {
-            //Talent talent = dbService.GetTalentById(id);
-        }
 
+        public Talent ShowTalentCard(int id)
+        {
+            Talent talent = dbService.GetTalentById(id);
+            return talent;
+        }
+        public Talent EditTalentCard(int id)
+        {
+            Talent t = dbService.GetTalentById(id);
+            return t;
+        }
+        public int GetNextId()
+        {
+            int nextId = dbService.GetNextId();
+            return nextId;
+        }
 
     }
 }

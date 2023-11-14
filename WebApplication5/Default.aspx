@@ -9,21 +9,23 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title></title>
+    <title>Talents Agancy</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="Scripts/Requests.js"></script>
+    <link href="Styles/AgancyStyle.css" rel="stylesheet" />
 </head>
 <body>
+    <h1>Talents Agancy</h1>
     <form id="form1" runat="server">
         <div>
             <uc:TalentList runat="server" ID="talentList" />
         </div>
-        <div id="talentCardDiv" style="display: none;">
+        <div id="talentCardDiv" style="display: none">
             <uc:TalentCard runat="server" ID="talentCard" />
         </div>
-        <div>
+        <div id="talentManagementDiv" style="display: none">
             <uc:TalentManagement runat="server" ID="talentManagement" />
         </div>
-        <button id="try" onclick="doSomething()"></button>
     </form>
 
 

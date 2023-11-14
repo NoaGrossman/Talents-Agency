@@ -1,12 +1,30 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="TalentManagement.ascx.cs" Inherits="WebApplication5.UserControls.TalentManagement" %>
 
-<div>
-    <!-- Form fields for talent management -->
-    <asp:TextBox ID="txtName" runat="server" Placeholder="Name" /><br />
-    <asp:TextBox ID="txtEmail" runat="server" Placeholder="Email" /><br />
-    <asp:TextBox ID="txtDob" runat="server" Placeholder="Date of Birth (dd-mm-yyyy)" /><br />
-    <asp:TextBox ID="txtSpecialization" runat="server" Placeholder="Specialization" /><br />
-
-    <!-- Add, Edit, and Delete buttons -->
-    <asp:Button ID="btnAdd" runat="server" Text="Add" OnClick="btnAdd_Click" />
-</div>
+<form class="talent-card" id="talentForm">
+    <h2>Talent Management</h2>
+    <hr />
+    <div class="field">
+        <label for="talentManagementId">Talent ID:</label>
+        <span id="talentManagementId"></span>
+    </div>
+    <div class="field">
+        <label for="talentManagementName">Name:</label>
+        <input id="talentManagementName" type="text" required />
+    </div>
+    <div class="field">
+        <label for="talentManagementSpecialization">Specialization:</label>
+        <input id="talentManagementSpecialization" type="text" required minlength="5" />
+    </div>
+    <div class="field">
+        <label for="talentManagementEmail">Email:</label>
+        <input id="talentManagementEmail" type="email" required />
+    </div>
+    <div class="field">
+        <label for="talentManagementDOB">Date of Birth:</label>
+        <input id="talentManagementDOB" type="date" required />
+    </div>
+    <div>
+        <button id="updateBtn" onclick="updateClicked(event)" style="display: none">Update Talent</button>
+        <button id="addTalentBtn" type="submit" onclick="onAddBtnClicked(event)"  style="display: none">Add Talent</button>
+    </div>
+</form>
